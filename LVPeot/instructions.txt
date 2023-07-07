@@ -1,0 +1,166 @@
+LVP - Labels and Values Protocol
+
+1) Operational details
+
+-The purpose of this library is to enable control over numeric variables
+via serial port. Here is how it works:
+    
+	i)You create a new LVP variable, passing the number of variables and the
+	baud rate. This library uses the traditional serial port.
+		
+		LVP data(numVar,baudRate);
+	
+	ii)In the arduino setup, you will use the add functions to associate a
+	label with the variable address. This means the library stores pointers,
+	not values hence making possible to change their values easily.
+	
+		data.addParameter("a",&a);
+		data.addResult("b",&b);
+		
+		When passing the address DO NOT forget we use the '&'
+		
+	iii)The difference between a parameter and a result is that a parameter's
+	value can be modified via serial commands while a result's can't.
+	The idea is: variables whose values are determined by other variables are
+	results and others are parameters.
+
+	iv) The only thing you need to add to the code is the:
+	
+			data.getNewCommand();
+		
+	In the serial event of your arduino sketch:
+		
+		void serialEvent (){ //This function is called at the end of the loop if new data has arrived through serial port
+			data.getNewCommand();
+		}
+	
+	v)After uploading the code, you will communicate through the commands.
+
+-The variables whose address will be passed must be byte, int, word ('word' and 'unsigned int' are the same), short, long, unsigned long, float or double.
+	
+-Every label must begin with letters and be LOWER CASE only.
+	
+-Each label must be unique. There will be issues if two variables have the same label.
+
+-An invalid command will just be ignored.
+
+-The standard string format is: command (something,something1,...,somethingN).
+
+-The arduino will only listen to a command after a connection is established.
+
+-There are three output strings implemented: dataString, warnings and messages. They inform the user
+if something was wrong with the typed command or display the information requested.
+----------------------------------------------------------------------------------------
+
+2)Inside Arduino Functions
+
+Assuming 'data' is the LVP variable name:
+
+-LVP data(numData, baudRate):
+	The argument of this constructor is the number of variables that access will be given via serial port and the baud rate for the serial communication.
+	
+-data.initialize():	
+	This function begins the serial communication and allocates the vector that is used.
+	
+****For the following functions, assume that variableType can be replaced by any of the following: byte, int, word, short, long, unsigned long, float or double.
+
+-data.addParameter(String label,variableType *pointer):
+	This functions takes a variable's address, which is the pointer argument, and associates it with the given label.
+	That variable is also marked as a parameter.	
+	
+-data.addParameter(String label,variableType *pointer,variableType defaultValue):
+	This functions takes a variable's address, which is the pointer argument, and associates it with the given label and 
+	the given defaultValue. That variable is also marked as a parameter.
+	
+-data.addResult(String label,variableType *pointer):
+	This functions takes a variable's address, which is the pointer argument, and associates it with the given label.
+	That variable is also marked as a result and won't be modified by 'set' command.
+	
+	
+Obs: There are no default values for results, since their values are determined by the parameters.
+
+-setDefaultValue(String label,variableType defaultValue):
+	This function searches for the given label. If it exists and it is a parameter, it associates the given
+	default value with the variable represented by the label. If the variable type is not the same of the given value, a cast will be
+    executed first before the association.
+	
+-getNewCommand():
+	This function is to be used to capture commands typed via serial port. It uses a string to store the incoming chars until a '\n' is 
+	received. Then, it splits the string into command and arguments and execute the given command.
+	
+-isConnected():
+	This functions returns a boolean value, 'true' if there is an active connection and 'false' otherwise.
+	
+-getState():
+	This functions returns a string with:
+	
+		i)manual connection: "Manual Connection."
+		
+		ii)auto connection: "Automatic Connection."
+		
+		iii)quiet connection: "Quiet Connection."
+		
+		iv)no active connection: "Disconnected."
+		
+		
+----------------------------------------------------------------------------------------
+
+3) Serial Commands
+
+-manual_connect:
+	This command establishes a manual connection. To be used when a user is talking to the
+	arduino via Serial monitor. The difference between a automatic and a manual connection 
+	is the way the data will be sent over the serial port.
+	
+-auto_connect:
+	This command establishes a automatic connection. To be used when the arduino is
+	being used with a computer program.
+
+-quiet_connect:
+	This command establishes a quiet connection. To be used when you don't want any messages to be
+	sent via serial port.
+	
+- get:
+	This command is used to obtain the data from arduino. The data will be displayed as follows:
+	
+	i)Automatic connection:
+		(label1,value1,label2,value2,...,labelN,valueN)
+		
+	ii)Manual connection:
+		Parameter(or Result) label1: value1
+		Parameter(or Result) label2: value2
+		
+	Also, this command can be typed with arguments. The argument would be the label of the value
+	you want:
+	
+		Command: 
+			get (label1,label3)
+		Response: 
+			Auto mode: 
+				(label1,value1,label3,value3)
+			Manual mode:
+				label1: value1
+				label3: value3
+	
+	Typing a non-existent label will trigger a warning message
+	
+-set:
+	This command is to change the values of variables inside the arduino. The syntax is:
+		set (label1,newValue1,label2,newValue2,...,label3,newValue3)
+		
+	Typing a non-existent label will trigger a warning and the value typed after it will be ignored.
+	Also, typing a existent label without a value will trigger a different warning.
+	
+	If a float value is typed for a label that represents an int variable, the numbers 
+	after the decimal point will be discarded.
+	
+	Typing this command without any parameters will trigger a warnings.
+	
+-disconnect:
+	Ends the current connection.
+	
+-reset:
+	This command will reset the parameters that have a default value to its default value. If it doesn't
+	have one, the value will remain unchanged.
+	
+	

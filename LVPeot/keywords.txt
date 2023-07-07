@@ -1,0 +1,9 @@
+LVP	KEYWORD1
+initialize	KEYWORD2
+addParameter	KEYWORD2
+addResult	KEYWORD2
+setDefaultValue	KERWORD2
+getNewCommand	KEYWORD2
+isConnected	KEYWORD2
+getState	KEYWORD2
+addFunction	KEYWORD2

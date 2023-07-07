@@ -1,0 +1,29 @@
+1)Operational details:
+
+-This library is to be used with a single device in the OneWire pin.
+
+-To use this library, declare a DS18S20 variable passing the OneWire pin as argument.
+    
+    DS18S20 termo(2);
+
+-----------------------------------------------------------------------------------------
+
+2) Functions:
+
+Assuming 'termo' is the DS18S20 variable name:
+
+-sensor.getTemp():
+    This function returns a float with the temperature reading in celcius.
+
+-sensor.getTempF():
+    This function returns a float with the temperature reading in Fahrenheit. It is given by Tf=Tc*1.8 + 32	
+
+-sensor.getTempK():
+	This function returns a float with the temperature reading in Kelvin. It is given by Tk=Tc+273.15	
+
+-----------------------------------------------------------------------------------------
+
+3) Examples:
+    
+-HowToUse:
+	A simple example that gives you the temperature via Serial port.
