@@ -17,14 +17,15 @@ jobs:
       run: rm -rf zips
 
     - name: Create zips
+      working-directory: ./src
       run: |
         # Create the zips directory if it doesn't exist
         mkdir -p zips
 
         # Loop through subfolders in src and zip them into zips
         # without adding the parent folder (src) to the zip
-        for dir in src/*; do
-          zip -r "zips/$(basename "$dir").zip" "$dir" -x "$dir"
+        for dir in */; do
+          zip -r ../zips/"${dir%/}.zip" "$dir" -x "$dir"
         done
 
 
