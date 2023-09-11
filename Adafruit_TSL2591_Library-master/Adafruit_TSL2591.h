@@ -153,7 +153,7 @@ class Adafruit_TSL2591 : public Adafruit_Sensor
   uint8_t getStatus();
   
   /* Unified Sensor API Functions */  
-  void getEvent  ( sensors_event_t* );
+  bool getEvent  ( sensors_event_t* );
   void getSensor ( sensor_t* );
 
  private:

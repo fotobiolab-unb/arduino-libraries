@@ -437,7 +437,7 @@ uint8_t Adafruit_TSL2591::getStatus(void)
     @return True on success, False on failure
 */
 /**************************************************************************/
-void Adafruit_TSL2591::getEvent(sensors_event_t *event)
+bool Adafruit_TSL2591::getEvent(sensors_event_t *event)
 {
   uint16_t ir, full;
   uint32_t lum = getFullLuminosity();
