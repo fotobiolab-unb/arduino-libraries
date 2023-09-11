@@ -22,11 +22,8 @@ jobs:
       run: |
         # Loop through subfolders in src and zip them into zips
         # without adding the parent folder (src) to the zip
-        for dir in src/*; do
-          cd $dir
-          zip -r ../../zips/$(basename $dir).zip .
-          cd ../..
-        done
+        cd src
+        for d in */; do zip -r ../zips/"${d%/}.zip" "$d"; done
 
 
     - name: Commit and push zipped files
