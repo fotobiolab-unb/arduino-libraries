@@ -21,15 +21,12 @@ jobs:
         # Create the zips directory if it doesn't exist
         mkdir -p zips
 
-        # Loop through subfolders in src and zip them
-        for folder in src/*; do
-          if [ -d "$folder" ]; then
-            folder_name=$(basename "$folder")
-            cd "$folder"
-            zip -r "../zips/$folder_name.zip" .
-            cd ..
-          fi
+        # Loop through subfolders in src and zip them into zips
+        # without adding the parent folder (src) to the zip
+        for dir in src/*; do
+          zip -r "zips/$(basename "$dir").zip" "$dir" -x "$dir"
         done
+
 
     - name: Commit and push zipped files
       run: |
