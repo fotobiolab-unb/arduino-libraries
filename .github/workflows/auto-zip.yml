@@ -13,6 +13,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Delete Existing Zips
+      run: rm -rf zips
+
     - name: Create zips
       run: |
         # Create the zips directory if it doesn't exist
@@ -22,7 +25,9 @@ jobs:
         for folder in src/*; do
           if [ -d "$folder" ]; then
             folder_name=$(basename "$folder")
-            zip -r "zips/$folder_name.zip" "$folder"
+            cd "$folder"
+            zip -r "../zips/$folder_name.zip" .
+            cd ..
           fi
         done
 
