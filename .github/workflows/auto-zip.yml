@@ -1,0 +1,36 @@
+name: Zip Subfolders
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  zip_subfolders:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Create zips
+      run: |
+        # Create the zips directory if it doesn't exist
+        mkdir -p zips
+
+        # Loop through subfolders in src and zip them
+        for folder in src/*; do
+          if [ -d "$folder" ]; then
+            folder_name=$(basename "$folder")
+            zip -r "zips/$folder_name.zip" "$folder"
+          fi
+        done
+
+    - name: Commit and push zipped files
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+        git add zips/*
+        git commit -m "Add zipped subfolders"
+        git push
