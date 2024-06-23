@@ -778,6 +778,14 @@ void LVP::processArguments(byte option){
 
         dataString+=currentString+","+dataValueToString(data[index])+",";
       }
+      else if (_quietConnection){
+          if (data[index].isParameter){
+            Serial.println(dataValueToString(data[index]));
+          }else{
+            Serial.println('NaN');
+          }
+          Serial.write(4);
+      }
     }
   } while (arguments!=")");
 }
@@ -1148,12 +1156,9 @@ void LVP::sendStrings(){
       Serial.println(warnings);
     if (messages!="")
       Serial.println(messages);
-    //Serial.println("eot");
-    //Serial.println();
     Serial.write(4); //End of transmission
   }
   else if(_quietConnection)
-    //Serial.println("eot");
     Serial.write(4); //End of transmission
 }
 
